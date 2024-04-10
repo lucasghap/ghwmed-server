@@ -14,7 +14,12 @@ export class SchedulesService {
         b.ds_item_agendamento "scheduleItem",
         a.nm_paciente "patientName",
         e.nm_convenio "covenantName",
-        f.ds_multi_empresa "companyName"
+        f.ds_multi_empresa "companyName",
+        CASE 
+          WHEN a.tp_situacao = 'C'
+            THEN 'canceled'
+              ELSE 'scheduled'
+        END "status"
       FROM it_agenda_central a,
         item_agendamento b,
         agenda_central c,
