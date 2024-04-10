@@ -44,4 +44,72 @@ export class SchedulesService {
 
     return schedules
   }
+
+  async findSchedulesSurgeries({ initialDate, finalDate }: FindSchedulesDto) {
+    const schedules = await this.oracle.query(`
+      SELECT DISTINCT
+      A.CENTRO_CIRURGICO "surgeryCenter"
+      ,A.SALA_CIRURGIA "surgeryRoom"
+      ,to_char(A.DATA_AGENDA, 'dd/mm/yyyy hh24:mi') "date"
+      ,A.PACIENTE "patientName"
+      ,B.CONVENIO "covenantName"
+      ,A.observacao_aviso "observation"
+      ,B.CIRURGIA "scheduleItem"
+      ,B.observacao_cirurgia "observationSurgery"
+      ,A.DATA_AGENDA
+      FROM 
+      (
+      SELECT 
+        a.cd_age_cir cod_agenda
+      ,a.cd_aviso_cirurgia cod_aviso
+      ,dt_inicio_age_cir data_agenda
+      ,To_Char(a.vl_tempo_cirurgia, 'hh24:mi') tempo_cirurgia
+      ,s.cd_cen_cir cod_centro_cirurgico
+      ,c.ds_cen_cir centro_cirurgico
+      ,s.cd_sal_cir cod_sala_cirurgia
+      ,s.ds_sal_cir sala_cirurgia
+      ,v.nm_paciente paciente
+      ,v.vl_idade idade
+      ,Decode(v.tp_sexo, 'M', 'Masculino', 'F', 'Feminino', 'I', 'Indeterminado') Sexo
+      ,v.ds_obs_aviso observacao_aviso
+      FROM 
+        age_cir a
+      ,sal_cir s
+      ,cen_cir c
+      ,aviso_cirurgia v
+      WHERE a.cd_sal_cir = s.cd_sal_cir
+        AND s.cd_cen_cir = c.cd_cen_cir
+        AND a.cd_aviso_cirurgia = v.cd_aviso_cirurgia
+        AND v.tp_situacao = 'G'
+      ) A
+      ,
+      ( 
+      SELECT 
+        r.cd_aviso_cirurgia cod_aviso
+      ,r.cd_convenio cod_convenio
+      ,c.nm_convenio convenio
+      ,r.cd_cirurgia cod_cirurgia
+      ,g.ds_cirurgia cirurgia
+      ,r.ds_observacao observacao_cirurgia
+      ,p.cd_prestador cod_prestador
+      ,t.nm_prestador prestador
+        FROM cirurgia_aviso r, convenio c, cirurgia g, prestador_aviso p, prestador t
+      WHERE r.cd_convenio = c.cd_convenio
+        AND r.cd_cirurgia = g.cd_cirurgia
+        AND r.cd_aviso_cirurgia = p.cd_aviso_cirurgia
+        AND p.cd_prestador = t.cd_prestador
+        AND p.cd_prestador = 237
+        AND p.cd_ati_med = '01'
+      ) B
+      WHERE A.COD_AVISO = B.COD_AVISO
+      AND to_date(to_char(a.data_agenda, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+      BETWEEN to_date(:initialDate, 'YYYY-MM-DD') AND to_date(:finalDate, 'YYYY-MM-DD')
+      ORDER BY a.data_agenda
+    `, {
+      initialDate,
+      finalDate
+    })
+
+    return schedules
+  }
 }

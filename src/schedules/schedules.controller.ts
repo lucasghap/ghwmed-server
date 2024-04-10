@@ -15,4 +15,14 @@ export class SchedulesController {
       finalDate
     })
   }
+
+  @Get('/surgeries')
+  findSchedulesSurgeries(@Query() queryFindSchedules: FindSchedulesDto) {
+    const { initialDate, finalDate } = queryFindSchedules
+
+    return this.schedulesService.findSchedulesSurgeries({
+      initialDate,
+      finalDate
+    })
+  }
 }
