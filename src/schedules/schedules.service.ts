@@ -15,6 +15,7 @@ export class SchedulesService {
         a.nm_paciente "patientName",
         e.nm_convenio "covenantName",
         f.ds_multi_empresa "companyName",
+        a.ds_observacao "observation",
         CASE 
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
