@@ -34,9 +34,11 @@ export class AttendancesService {
         AND a.dt_alta IS NULL
         AND m.dt_lib_mov IS NULL
         AND a.tp_atendimento = 'I'
-        AND r.NR_CPF_CGC  = '82726833691'
+        AND r.NR_CPF_CGC  = :cpf
       ORDER BY a.dt_atendimento
-    `)
+    `, {
+      cpf: '82726833691'
+    })
 
     return attendances
   }

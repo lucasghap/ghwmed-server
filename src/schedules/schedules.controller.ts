@@ -25,4 +25,9 @@ export class SchedulesController {
       finalDate
     })
   }
+
+  @Get('/count')
+  count() {
+    return this.schedulesService.count()
+  }
 }
