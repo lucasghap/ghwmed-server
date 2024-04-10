@@ -25,7 +25,7 @@ export class OracleService {
 
       connection = await pool.getConnection()
 
-      let results = await connection.execute(query, params, {
+      let results = await connection.execute(query, params ? params : {}, {
         outFormat: OUT_FORMAT_OBJECT
       })
 
