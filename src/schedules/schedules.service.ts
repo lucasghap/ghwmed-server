@@ -57,6 +57,7 @@ export class SchedulesService {
       ,B.CIRURGIA "scheduleItem"
       ,B.observacao_cirurgia "observationSurgery"
       ,A.DATA_AGENDA
+      , 'scheduled' "status"
       FROM 
       (
       SELECT 
