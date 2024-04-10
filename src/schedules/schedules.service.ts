@@ -192,7 +192,7 @@ export class SchedulesService {
       AND a.tp_atendimento = 'I'
       AND b.NR_CPF_CGC  = :cpf
     `, {
-      cpf: ''
+      cpf: '05126632620'
     })
 
     return count
