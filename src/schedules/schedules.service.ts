@@ -17,7 +17,7 @@ export class SchedulesService {
     const schedules = await this.oracle.query(`
       SELECT 
         a.cd_it_agenda_central "id",
-        to_char(a.hr_agenda, 'dd/mm/yyyy hh:mi') "date",
+        to_char(a.hr_agenda, 'dd/mm/yyyy hh24:mi') "date",
         b.ds_item_agendamento "scheduleItem",
         a.nm_paciente "patientName",
         e.nm_convenio "covenantName",
