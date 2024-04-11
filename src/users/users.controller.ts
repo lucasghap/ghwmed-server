@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { AuthUser, CurrentUser } from 'src/auth/jwt/current-user';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -18,8 +19,8 @@ export class UsersController {
   }
 
   @Get('/me')
-  findMe() {
-    return this.usersService.findById('123')
+  findMe(@CurrentUser() user: AuthUser) {
+    return this.usersService.findById(user.id)
   }
 
   @Put('/:id')
