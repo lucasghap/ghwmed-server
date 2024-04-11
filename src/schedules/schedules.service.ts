@@ -214,15 +214,23 @@ export class SchedulesService {
         )
         
         UNION ALL
-        
-        SELECT 
+
+        SELECT
           'attendances-internacao' "label",
           count(*) "amount"
-        FROM atendime a, prestador b
-        WHERE a.cd_prestador = b.cd_prestador
-        AND a.dt_alta IS NULL
-        AND a.tp_atendimento = 'I'
-        AND b.NR_CPF_CGC  = :cpf
+          FROM atendime a, paciente p, prestador r, pro_fat x, convenio c, mov_int m, leito l, unid_int u, especialid e
+        WHERE a.cd_paciente = p.cd_paciente
+          AND a.cd_prestador = r.cd_prestador
+          AND a.cd_pro_int = x.cd_pro_fat
+          AND a.cd_convenio = c.cd_convenio
+          AND a.cd_atendimento = m.cd_atendimento
+          AND m.cd_leito = l.cd_leito
+          AND l.cd_unid_int = u.cd_unid_int
+          AND a.cd_especialid = e.cd_especialid
+          AND a.dt_alta IS NULL
+          AND m.dt_lib_mov IS NULL
+          AND a.tp_atendimento = 'I'
+          AND r.NR_CPF_CGC  = :cpf
     `, {
       cpf: user.cpf
     })
