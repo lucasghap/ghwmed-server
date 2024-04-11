@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { hash } from 'bcryptjs';
 import { PrismaService } from 'src/prima.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,12 +17,14 @@ export class UsersService {
 
     if (emailAlreadyExists) throw new ConflictException('Este e-mail já está em uso')
 
+    const passwordHash = await hash(password, 8)
+
     await this.prisma.user.create({
       data: {
         name,
         cpf,
         email,
-        password
+        password: passwordHash
       }
     })
   }
