@@ -1,4 +1,5 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { AuthUser, CurrentUser } from 'src/auth/jwt/current-user';
 import { JwtGuard } from 'src/auth/jwt/jwt-guard';
 import { FindSchedulesDto } from './dto/find-schedules.dto';
 import { SchedulesService } from './schedules.service';
@@ -9,27 +10,29 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Get()
-  findSchedules(@Query() queryFindSchedules: FindSchedulesDto) {
+  findSchedules(@Query() queryFindSchedules: FindSchedulesDto, @CurrentUser() user: AuthUser) {
     const { initialDate, finalDate } = queryFindSchedules
 
     return this.schedulesService.findSchedules({
       initialDate,
-      finalDate
+      finalDate,
+      userId: user.id
     })
   }
 
   @Get('/surgeries')
-  findSchedulesSurgeries(@Query() queryFindSchedules: FindSchedulesDto) {
+  findSchedulesSurgeries(@Query() queryFindSchedules: FindSchedulesDto, @CurrentUser() user: AuthUser) {
     const { initialDate, finalDate } = queryFindSchedules
 
     return this.schedulesService.findSchedulesSurgeries({
       initialDate,
-      finalDate
+      finalDate,
+      userId: user.id
     })
   }
 
   @Get('/count')
-  count() {
-    return this.schedulesService.count()
+  count(@CurrentUser() user: AuthUser) {
+    return this.schedulesService.count(user.id)
   }
 }

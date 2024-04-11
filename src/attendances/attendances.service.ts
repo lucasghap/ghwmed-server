@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { OracleService } from 'src/oracle/oracle.service';
+import { PrismaService } from 'src/prima.service';
 
 @Injectable()
 export class AttendancesService {
-  constructor(private oracle: OracleService){}
+  constructor(private oracle: OracleService, private prisma: PrismaService){}
 
-  async findAttendances() {
+  async findAttendances(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+
     const attendances = await this.oracle.query(`
       SELECT
       a.cd_atendimento "id"
@@ -37,7 +44,7 @@ export class AttendancesService {
         AND r.NR_CPF_CGC  = :cpf
       ORDER BY a.dt_atendimento
     `, {
-      cpf: '82726833691'
+      cpf: user.cpf
     })
 
     return attendances
