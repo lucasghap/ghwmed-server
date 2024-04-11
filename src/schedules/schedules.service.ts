@@ -23,12 +23,11 @@ export class SchedulesService {
         e.nm_convenio "covenantName",
         f.ds_multi_empresa "companyName",
         a.ds_observacao "observation",
+        a.cd_atendimento "attendanceId",
         CASE 
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
               ELSE 'scheduled'
-          WHEN a.cd_atendimento
-            THEN 'attendance'
         END "status"
       FROM it_agenda_central a,
         item_agendamento b,
