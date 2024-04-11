@@ -27,6 +27,8 @@ export class SchedulesService {
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
               ELSE 'scheduled'
+          WHEN a.cd_atendimento
+            THEN 'attendance'
         END "status"
       FROM it_agenda_central a,
         item_agendamento b,
