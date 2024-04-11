@@ -17,6 +17,14 @@ export class UsersService {
 
     if (emailAlreadyExists) throw new ConflictException('Este e-mail já está em uso')
 
+    const cpfExists = await this.prisma.user.findUnique({
+      where: {
+        cpf
+      }
+    })
+
+    if (cpfExists) throw new ConflictException('Este CPF já está em uso')
+
     const passwordHash = await hash(password, 8)
 
     await this.prisma.user.create({
