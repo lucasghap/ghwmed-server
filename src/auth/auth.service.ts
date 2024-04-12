@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
 import { OracleService } from 'src/oracle/oracle.service'
@@ -19,8 +19,12 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async create({ cpf, password, providerId }: CreateAuthDto) {
+  async create({ cpf, password, providerId, token }: CreateAuthDto) {
     let providerMv: ProviderMv | null = null
+
+    if (token && token !== process.env.TOKEN_PEP) {
+      throw new BadRequestException('Token inválido')
+    }
 
     if (providerId) {
       const results = await this.oracle.query(`
