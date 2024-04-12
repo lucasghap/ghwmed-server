@@ -42,7 +42,7 @@ export class AuthService {
 
     const cpfExists = await this.prisma.user.findUnique({
       where: {
-        cpf: providerId ? providerMv.cpf : cpf,
+        cpf: providerMv.cpf ? providerMv.cpf.padStart(11, '0') : cpf,
       },
     })
 
