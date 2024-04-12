@@ -46,8 +46,12 @@ export class AuthService {
       },
     })
 
+    console.log(providerMv.cpf)
+
     if (!cpfExists)
       throw new UnauthorizedException('CPF ou senha inválidos')
+
+      console.log(providerId)
 
     if (!providerId) {
       const passwordMatch = await compare(password, cpfExists.password)
