@@ -7,7 +7,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post()
-  create(@Body() { cpf, password }: CreateAuthDto) {
-    return this.authService.create({ cpf, password })
+  create(@Body() { cpf, password, providerId }: CreateAuthDto) {
+    return this.authService.create({ cpf, password, providerId })
   }
 }
