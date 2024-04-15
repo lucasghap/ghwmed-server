@@ -17,7 +17,7 @@ export class ExamsImageService {
         AND ip.cd_exa_rx = er.cd_exa_rx
         AND pr.cd_atendimento = :attendanceId
     `, {
-      attendanceId: 49
+      attendanceId: 121
     })
 
     return examsImage
