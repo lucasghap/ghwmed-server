@@ -20,7 +20,7 @@ export class PrescriptionsService {
         and dc.cd_atendimento = :attendanceId
         ORDER BY dc.dh_criacao ASC
     `, {
-      attendanceId: 2201
+      attendanceId
     })
 
     return prescriptions
