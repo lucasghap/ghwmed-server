@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { OracleService } from 'src/oracle/oracle.service';
 
 @Injectable()
-export class PrescriptionsService {
+export class AllergiesService {
   constructor(private oracle: OracleService){}
 
   async findByAttendanceId(attendanceId: number) {
-    const prescriptions = await this.oracle.query(`
+    const allergies = await this.oracle.query(`
       SELECT 
         To_Char(dc.dh_criacao, 'dd/mm/yyyy') || ' ' || To_Char(dc.dh_criacao, 'hh24:mi') "date"
       ,su.ds_substancia "substance"
@@ -23,6 +23,6 @@ export class PrescriptionsService {
       attendanceId
     })
 
-    return prescriptions
+    return allergies
   }
 }
