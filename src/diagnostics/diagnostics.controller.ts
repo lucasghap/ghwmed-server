@@ -7,6 +7,6 @@ export class DiagnosticsController {
 
   @Get('/attendances/:id')
   findByAttendanceId(@Param('id') id: string) {
-    return this.diagnosticsService.findByAttendanceId(id)
+    return this.diagnosticsService.findByAttendanceId(+id)
   }
 }
