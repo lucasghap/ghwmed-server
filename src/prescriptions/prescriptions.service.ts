@@ -9,7 +9,7 @@ export class PrescriptionsService {
     const prescriptions = await this.oracle.query(`
       SELECT 
         To_Char(dc.dh_criacao, 'dd/mm/yyyy') || ' ' || To_Char(dc.dh_criacao, 'hh24:mi') "date"
-      ,su.ds_substancia "substncea"
+      ,su.ds_substancia "substance"
       ,decode(ap.tp_alergia, 'O','outros', 'A','Alimento', 'S', '(Substancia) Medicamento') "allergyType"
       ,Decode(ap.tp_severidade,'G','Grave', 'M','Moderada', 'L','Leve', 'D','Desconhecida') "severity"
       ,da.ds_observacao "observation"
