@@ -30,7 +30,7 @@ export class PrescriptionsService {
         AND im.sn_cancelado = 'N'
         ORDER BY pm.dt_pre_med, pm.hr_pre_med
     `, {
-      attendanceId: 58
+      attendanceId
     })
 
     return prescriptions
