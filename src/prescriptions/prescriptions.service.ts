@@ -10,6 +10,8 @@ export class PrescriptionsService {
       SELECT DISTINCT
         pm.cd_pre_med "id"
       ,pm.cd_atendimento cod_atendimento
+      ,pm.dt_pre_med
+      ,pm.hr_pre_med
       ,To_Char(pm.dt_pre_med, 'dd/mm/yyyy') || ' ' || To_Char(pm.hr_pre_med, 'hh24:mi') "date"
       ,te.ds_tip_esq "scheme"
       ,tp.ds_tip_presc "item"
