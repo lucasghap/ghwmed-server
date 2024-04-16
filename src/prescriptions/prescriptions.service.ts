@@ -28,6 +28,7 @@ export class PrescriptionsService {
         AND te.ds_tip_esq LIKE ('%MEDICAMEN%')
         AND pm.cd_atendimento = :attendanceId
         AND im.sn_cancelado = 'N'
+        AND pm.hr_pre_med >= SYSDATE - INTERVAL '1' DAY -- pegar as prescrições das últimas 24 horas
         ORDER BY pm.dt_pre_med desc, pm.hr_pre_med desc
     `, {
       attendanceId
