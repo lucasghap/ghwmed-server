@@ -26,7 +26,7 @@ export class PrescriptionsService {
         AND te.ds_tip_esq LIKE ('%MEDICAMEN%')
         AND pm.cd_atendimento = :attendanceId
         AND im.sn_cancelado = 'N'
-        ORDER BY 2, 6 
+        ORDER BY pm.dt_pre_med, pm.hr_pre_med
     `, {
       attendanceId: 58
     })
