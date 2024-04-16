@@ -9,7 +9,7 @@ export class ExamsImageService {
     const examsImage = await this.oracle.query(`
       SELECT 
         pr.cd_ped_rx "requestId"
-      ,ip.cd_itped_rx "itemRequestId",
+      ,ip.cd_itped_rx "itemRequestId"
       ,To_Char(pr.dt_pedido, 'dd/mm/yyyy') || ' ' || To_Char(pr.hr_pedido, 'hh24:mi') "date"
       ,er.ds_exa_rx "examName"
       ,ip.sn_realizado "done"
