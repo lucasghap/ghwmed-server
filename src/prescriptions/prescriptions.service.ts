@@ -13,10 +13,9 @@ export class PrescriptionsService {
       ,To_Char(pm.dt_pre_med, 'dd/mm/yyyy') || ' ' || To_Char(pm.hr_pre_med, 'hh24:mi') "date"
       ,te.ds_tip_esq "scheme"
       ,tp.ds_tip_presc "item"
-      ,fa.ds_for_apl "applicatioType"
+      ,fa.ds_for_apl "applicationType"
       ,tf.ds_tip_fre "frequence"
-      ,im.qt_itpre_med "quantity"
-      ,up.ds_unidade "unity"
+      ,im.qt_itpre_med || ' ' || up.ds_unidade "quantity"
         FROM pre_med pm, itpre_med im,  tip_fre tf, tip_presc tp, tip_esq te, for_apl fa, uni_pro up
       WHERE pm.cd_pre_med = im.cd_pre_med
         AND im.cd_tip_fre = tf.cd_tip_fre
