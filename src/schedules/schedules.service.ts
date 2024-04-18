@@ -7,6 +7,24 @@ import { FindSchedulesDto } from './dto/find-schedules.dto';
 export class SchedulesService {
   constructor(private oracle: OracleService, private prisma: PrismaService){}
 
+  getObject(schedule: any) {
+    return {
+      patientName: schedule.patientName,
+      date: schedule.date,
+      surgeryCenter: schedule.surgeryCenter,
+      surgeryRoom: schedule.surgeryRoom,
+      covenantName: schedule.covenantName,
+      status: schedule.status,
+      items: [
+        {
+          scheduleItem: schedule.scheduleItem,
+          observation: schedule.observation,
+          observationSurgery: schedule.observationSurgery
+        }
+      ]
+    }
+  }
+
   async findSchedules({ initialDate, finalDate, userId }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -125,6 +143,31 @@ export class SchedulesService {
       initialDate,
       finalDate,
       cpf: user.cpf
+    })
+
+    let schedulesGroup = []
+
+    schedules.forEach(schedule => {
+      const patientAndHourAlreadyAdded = schedulesGroup.      
+                                              some(item => 
+                                                item.patientName === schedule.patientName &&
+                                                item.date === schedule.date  
+                                              )
+    
+      if (!patientAndHourAlreadyAdded) {
+        schedulesGroup.push(this.getObject(schedule))
+      } else {
+        schedulesGroup = schedulesGroup.map(item => {
+          if (item.patientName === schedule.patientName && item.date === schedule.date) {
+            item.items = [
+              ...item.items,
+              this.getObject(schedule)
+            ]
+          }
+
+          return item
+        })
+      }
     })
 
     return schedules
