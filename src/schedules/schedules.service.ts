@@ -161,7 +161,11 @@ export class SchedulesService {
           if (item.patientName === schedule.patientName && item.date === schedule.date) {
             item.items = [
               ...item.items,
-              this.getObject(schedule)
+              {
+                scheduleItem: schedule.scheduleItem,
+                observation: schedule.observation,
+                observationSurgery: schedule.observationSurgery
+              }
             ]
           }
 
