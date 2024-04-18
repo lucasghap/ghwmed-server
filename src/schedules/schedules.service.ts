@@ -170,7 +170,7 @@ export class SchedulesService {
       }
     })
 
-    return schedules
+    return schedulesGroup
   }
 
   async count(userId: string) {
