@@ -44,7 +44,6 @@ export class SchedulesService {
         a.ds_observacao "observation",
         a.cd_atendimento "attendanceId",
         CASE 
-          WHEN a.cd_atendimento is not null then 'attendance'
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
               ELSE 'scheduled'
