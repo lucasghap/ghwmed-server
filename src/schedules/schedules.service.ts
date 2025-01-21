@@ -5,7 +5,7 @@ import { FindSchedulesDto } from './dto/find-schedules.dto';
 
 @Injectable()
 export class SchedulesService {
-  constructor(private oracle: OracleService, private prisma: PrismaService){}
+  constructor(private oracle: OracleService, private prisma: PrismaService) {}
 
   getObject(schedule: any) {
     return {
@@ -19,20 +19,21 @@ export class SchedulesService {
         {
           scheduleItem: schedule.scheduleItem,
           observation: schedule.observation,
-          observationSurgery: schedule.observationSurgery
-        }
-      ]
-    }
+          observationSurgery: schedule.observationSurgery,
+        },
+      ],
+    };
   }
 
   async findSchedules({ initialDate, finalDate, userId }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: userId
-      }
-    })
+        id: userId,
+      },
+    });
 
-    const schedules = await this.oracle.query(`
+    const schedules = await this.oracle.query(
+      `
       SELECT 
         a.cd_it_agenda_central "id",
         to_char(a.hr_agenda, 'dd/mm/yyyy hh24:mi') "date",
@@ -43,6 +44,7 @@ export class SchedulesService {
         a.ds_observacao "observation",
         a.cd_atendimento "attendanceId",
         CASE 
+          WHEN a.cd_atendimento is not null then 'attendance'
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
               ELSE 'scheduled'
@@ -63,23 +65,30 @@ export class SchedulesService {
       AND to_date(to_char(a.hr_agenda, 'YYYY-MM-DD'), 'YYYY-MM-DD')
       BETWEEN to_date(:initialDate, 'YYYY-MM-DD') AND to_date(:finalDate, 'YYYY-MM-DD')
       ORDER BY a.hr_agenda asc
-    `, {
-      initialDate,
-      finalDate,
-      cpf: user.cpf
-    })
+    `,
+      {
+        initialDate,
+        finalDate,
+        cpf: user.cpf,
+      },
+    );
 
-    return schedules
+    return schedules;
   }
 
-  async findSchedulesSurgeries({ initialDate, finalDate, userId }: FindSchedulesDto) {
+  async findSchedulesSurgeries({
+    initialDate,
+    finalDate,
+    userId,
+  }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: userId
-      }
-    })
+        id: userId,
+      },
+    });
 
-    const schedules = await this.oracle.query(`
+    const schedules = await this.oracle.query(
+      `
       SELECT DISTINCT
       A.CENTRO_CIRURGICO "surgeryCenter"
       ,A.SALA_CIRURGIA "surgeryRoom"
@@ -139,52 +148,58 @@ export class SchedulesService {
       AND to_date(to_char(a.data_agenda, 'YYYY-MM-DD'), 'YYYY-MM-DD')
       BETWEEN to_date(:initialDate, 'YYYY-MM-DD') AND to_date(:finalDate, 'YYYY-MM-DD')
       ORDER BY a.data_agenda
-    `, {
-      initialDate,
-      finalDate,
-      cpf: user.cpf
-    })
+    `,
+      {
+        initialDate,
+        finalDate,
+        cpf: user.cpf,
+      },
+    );
 
-    let schedulesGroup = []
+    let schedulesGroup = [];
 
-    schedules.forEach(schedule => {
-      const patientAndHourAlreadyAdded = schedulesGroup.      
-                                              some(item => 
-                                                item.patientName === schedule.patientName &&
-                                                item.date === schedule.date  
-                                              )
-    
+    schedules.forEach((schedule) => {
+      const patientAndHourAlreadyAdded = schedulesGroup.some(
+        (item) =>
+          item.patientName === schedule.patientName &&
+          item.date === schedule.date,
+      );
+
       if (!patientAndHourAlreadyAdded) {
-        schedulesGroup.push(this.getObject(schedule))
+        schedulesGroup.push(this.getObject(schedule));
       } else {
-        schedulesGroup = schedulesGroup.map(item => {
-          if (item.patientName === schedule.patientName && item.date === schedule.date) {
+        schedulesGroup = schedulesGroup.map((item) => {
+          if (
+            item.patientName === schedule.patientName &&
+            item.date === schedule.date
+          ) {
             item.items = [
               ...item.items,
               {
                 scheduleItem: schedule.scheduleItem,
                 observation: schedule.observation,
-                observationSurgery: schedule.observationSurgery
-              }
-            ]
+                observationSurgery: schedule.observationSurgery,
+              },
+            ];
           }
 
-          return item
-        })
+          return item;
+        });
       }
-    })
+    });
 
-    return schedulesGroup
+    return schedulesGroup;
   }
 
   async count(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: userId
-      }
-    })
+        id: userId,
+      },
+    });
 
-    const count = await this.oracle.query(`
+    const count = await this.oracle.query(
+      `
       SELECT 
         'scheduled' "label",
       count(*) "amount"
@@ -280,10 +295,12 @@ export class SchedulesService {
           AND m.dt_lib_mov IS NULL
           AND a.tp_atendimento = 'I'
           AND r.NR_CPF_CGC  = :cpf
-    `, {
-      cpf: user.cpf
-    })
+    `,
+      {
+        cpf: user.cpf,
+      },
+    );
 
-    return count
+    return count;
   }
 }
