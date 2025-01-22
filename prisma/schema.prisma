@@ -14,14 +14,30 @@ datasource db {
 }
 
 model User {
-  id          String @id @default(uuid())
-  name        String
-  cpf         String @unique
-  email       String @unique
-  password    String
+  id       String @id @default(uuid())
+  name     String
+  cpf      String @unique
+  email    String @unique
+  password String
 
-  created_at  DateTime @default(now())
-  update_at   DateTime @default(now())
+  created_at DateTime @default(now())
+  update_at  DateTime @default(now())
+
+  schedulesAssisteds ScheduleAssisted[]
 
   @@map("users")
+}
+
+model ScheduleAssisted {
+  id String @id @default(uuid())
+
+  schedule_mv_id Int
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  update_at  DateTime @default(now())
+
+  @@map("schedules_assisteds")
 }

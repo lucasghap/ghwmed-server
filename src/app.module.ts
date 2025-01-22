@@ -9,9 +9,10 @@ import { SchedulesModule } from './schedules/schedules.module';
 import { UsersModule } from './users/users.module';
 import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { PasswordsModule } from './passwords/passwords.module';
+import { SchedulesAssistedsModule } from './schedules-assisteds/schedules-assisteds.module';
 
 @Module({
-  imports: [OracleModule, SchedulesModule, AttendancesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule],
+  imports: [OracleModule, SchedulesModule, AttendancesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule, SchedulesAssistedsModule],
   controllers: [],
   providers: [],
 })
