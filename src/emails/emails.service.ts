@@ -16,7 +16,7 @@ export class EmailsService {
     });
 
     await transporter.sendMail({
-      from: 'Didaktus <notificacao@ghap.com.br>',
+      from: 'GDoctor <notificacao@ghap.com.br>',
       to: to.join(', '),
       subject,
       html,
