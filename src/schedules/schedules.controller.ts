@@ -10,29 +10,35 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Get()
-  findSchedules(@Query() queryFindSchedules: FindSchedulesDto, @CurrentUser() user: AuthUser) {
-    const { initialDate, finalDate } = queryFindSchedules
+  findSchedules(
+    @Query() queryFindSchedules: FindSchedulesDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    const { initialDate, finalDate } = queryFindSchedules;
 
     return this.schedulesService.findSchedules({
       initialDate,
       finalDate,
-      userId: user.id
-    })
+      userId: user.id,
+    });
   }
 
   @Get('/surgeries')
-  findSchedulesSurgeries(@Query() queryFindSchedules: FindSchedulesDto, @CurrentUser() user: AuthUser) {
-    const { initialDate, finalDate } = queryFindSchedules
+  findSchedulesSurgeries(
+    @Query() queryFindSchedules: FindSchedulesDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    const { initialDate, finalDate } = queryFindSchedules;
 
     return this.schedulesService.findSchedulesSurgeries({
       initialDate,
       finalDate,
-      userId: user.id
-    })
+      userId: user.id,
+    });
   }
 
   @Get('/count')
   count(@CurrentUser() user: AuthUser) {
-    return this.schedulesService.count(user.id)
+    return this.schedulesService.count(user.id);
   }
 }

@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { AuthUser, CurrentUser } from 'src/auth/jwt/current-user';
 import { JwtGuard } from 'src/auth/jwt/jwt-guard';
 import { CreateSchedulesAssistedDto } from './dto/create-schedules-assisted.dto';
 import { SchedulesAssistedsService } from './schedules-assisteds.service';
@@ -19,8 +20,14 @@ export class SchedulesAssistedsController {
   ) {}
 
   @Post()
-  create(@Body() createSchedulesAssistedDto: CreateSchedulesAssistedDto) {
-    return this.schedulesAssistedsService.create(createSchedulesAssistedDto);
+  create(
+    @Body() createSchedulesAssistedDto: CreateSchedulesAssistedDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.schedulesAssistedsService.create({
+      ...createSchedulesAssistedDto,
+      userId: user.id,
+    });
   }
 
   @Get('/schedules-mv/:id')
