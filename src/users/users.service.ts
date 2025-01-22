@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { hash } from 'bcryptjs';
 import { PrismaService } from 'src/prima.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,69 +10,70 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) {}
 
   async create({ name, cpf, email, password }: CreateUserDto) {
     const emailAlreadyExists = await this.prisma.user.findUnique({
       where: {
-        email
-      }
-    })
+        email,
+      },
+    });
 
-    if (emailAlreadyExists) throw new ConflictException('Este e-mail já está em uso')
+    if (emailAlreadyExists)
+      throw new ConflictException('Este e-mail já está em uso');
 
     const cpfExists = await this.prisma.user.findUnique({
       where: {
-        cpf
-      }
-    })
+        cpf,
+      },
+    });
 
-    if (cpfExists) throw new ConflictException('Este CPF já está em uso')
+    if (cpfExists) throw new ConflictException('Este CPF já está em uso');
 
-    const passwordHash = await hash(password, 8)
+    const passwordHash = await hash(password, 8);
 
     await this.prisma.user.create({
       data: {
         name,
         cpf,
         email,
-        password: passwordHash
-      }
-    })
+        password: passwordHash,
+      },
+    });
   }
 
   async findById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
 
-    if (!user) throw new NotFoundException('Usuário não encontrado')
+    if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    const { password, ...rest } = user
+    const { password, ...rest } = user;
 
-    return rest
+    return rest;
   }
 
   async update(id: string, { name, email, cpf }: UpdateUserDto) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
 
-    if (!user) throw new NotFoundException('Usuário não encontrado')
+    if (!user) throw new NotFoundException('Usuário não encontrado');
 
     await this.prisma.user.update({
       data: {
         name,
         email,
-        cpf
+        cpf,
       },
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
   }
 }
