@@ -284,7 +284,7 @@ export class SchedulesService {
           FROM atendime a, paciente p, prestador r, pro_fat x, convenio c, mov_int m, leito l, unid_int u, especialid e
         WHERE a.cd_paciente = p.cd_paciente
           AND a.cd_prestador = r.cd_prestador
-          AND a.cd_pro_int = x.cd_pro_fat
+          AND a.cd_pro_int = x.cd_pro_fat(+)
           AND a.cd_convenio = c.cd_convenio
           AND a.cd_atendimento = m.cd_atendimento
           AND m.cd_leito = l.cd_leito
