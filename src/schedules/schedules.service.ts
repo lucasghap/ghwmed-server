@@ -25,12 +25,26 @@ export class SchedulesService {
     };
   }
 
-  async findSchedules({ initialDate, finalDate, userId }: FindSchedulesDto) {
+  async findSchedules({
+    initialDate,
+    finalDate,
+    userId,
+    companyId,
+  }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
+
+    const hasCompanyFilter =
+      companyId !== undefined &&
+      companyId !== null &&
+      String(companyId).trim() !== '';
+
+    const companyClause = hasCompanyFilter
+      ? 'AND c.cd_multi_empresa = :companyId'
+      : '';
 
     const schedules = await this.oracle.query(
       `
@@ -66,12 +80,14 @@ export class SchedulesService {
       AND d.nr_cpf_cgc = :cpf
       AND to_date(to_char(a.hr_agenda, 'YYYY-MM-DD'), 'YYYY-MM-DD')
       BETWEEN to_date(:initialDate, 'YYYY-MM-DD') AND to_date(:finalDate, 'YYYY-MM-DD')
+      ${companyClause}
       ORDER BY a.hr_agenda asc
     `,
       {
         initialDate,
         finalDate,
         cpf: user.cpf,
+        ...(hasCompanyFilter ? { companyId: String(companyId).trim() } : {}),
       },
     );
 

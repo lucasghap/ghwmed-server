@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AllergiesModule } from './allergies/allergies.module';
 import { AttendancesModule } from './attendances/attendances.module';
+import { CompaniesModule } from './companies/companies.module';
 import { AuthModule } from './auth/auth.module';
 import { DiagnosticsModule } from './diagnostics/diagnostics.module';
 import { ExamsImageModule } from './exams-image/exams-image.module';
@@ -12,7 +13,7 @@ import { PasswordsModule } from './passwords/passwords.module';
 import { SchedulesAssistedsModule } from './schedules-assisteds/schedules-assisteds.module';
 
 @Module({
-  imports: [OracleModule, SchedulesModule, AttendancesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule, SchedulesAssistedsModule],
+  imports: [OracleModule, SchedulesModule, AttendancesModule, CompaniesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule, SchedulesAssistedsModule],
   controllers: [],
   providers: [],
 })
