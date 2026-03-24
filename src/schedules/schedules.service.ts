@@ -43,6 +43,7 @@ export class SchedulesService {
         f.ds_multi_empresa "companyName",
         a.ds_observacao "observation",
         a.cd_atendimento "attendanceId",
+        g.ds_ser_dis "serDisName",
         CASE 
           WHEN a.tp_situacao = 'C'
             THEN 'canceled'
@@ -53,12 +54,14 @@ export class SchedulesService {
         agenda_central c,
         prestador d,
         convenio e,
-        multi_empresas f
+        multi_empresas f,
+        ser_dis g
       WHERE a.cd_item_agendamento = b.cd_item_agendamento
       AND a.cd_agenda_central = c.cd_agenda_central
       AND c.cd_prestador = d.cd_prestador
       AND a.cd_convenio = e.cd_convenio
       AND c.cd_multi_empresa = f.cd_multi_empresa
+      AND a.cd_ser_dis = g.cd_ser_dis(+)
       AND a.nm_paciente IS NOT NULL
       AND d.nr_cpf_cgc = :cpf
       AND to_date(to_char(a.hr_agenda, 'YYYY-MM-DD'), 'YYYY-MM-DD')
