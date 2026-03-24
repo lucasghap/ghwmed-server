@@ -98,12 +98,22 @@ export class SchedulesService {
     initialDate,
     finalDate,
     userId,
+    companyId,
   }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
+
+    const hasCompanyFilter =
+      companyId !== undefined &&
+      companyId !== null &&
+      String(companyId).trim() !== '';
+
+    const companyClause = hasCompanyFilter
+      ? 'AND v.cd_multi_empresa = :companyId'
+      : '';
 
     const schedules = await this.oracle.query(
       `
@@ -142,6 +152,7 @@ export class SchedulesService {
         AND s.cd_cen_cir = c.cd_cen_cir
         AND a.cd_aviso_cirurgia = v.cd_aviso_cirurgia
         AND v.tp_situacao = 'G'
+        ${companyClause}
       ) A
       ,
       ( 
@@ -171,6 +182,7 @@ export class SchedulesService {
         initialDate,
         finalDate,
         cpf: user.cpf,
+        ...(hasCompanyFilter ? { companyId: String(companyId).trim() } : {}),
       },
     );
 

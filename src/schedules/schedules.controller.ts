@@ -29,12 +29,13 @@ export class SchedulesController {
     @Query() queryFindSchedules: FindSchedulesDto,
     @CurrentUser() user: AuthUser,
   ) {
-    const { initialDate, finalDate } = queryFindSchedules;
+    const { initialDate, finalDate, companyId } = queryFindSchedules;
 
     return this.schedulesService.findSchedulesSurgeries({
       initialDate,
       finalDate,
       userId: user.id,
+      companyId,
     });
   }
 
