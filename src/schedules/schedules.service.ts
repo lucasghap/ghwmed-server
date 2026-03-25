@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OracleService } from 'src/oracle/oracle.service';
 import { PrismaService } from 'src/prima.service';
 import { FindSchedulesDto } from './dto/find-schedules.dto';
+import { FindSurgeryResourcesDto } from './dto/find-surgery-resources.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -18,6 +19,8 @@ export class SchedulesService {
       items: [
         {
           scheduleItem: schedule.scheduleItem,
+          surgeryCode: schedule.surgeryCode,
+          surgeryNoticeId: schedule.surgeryNoticeId,
           observation: schedule.observation,
           observationSurgery: schedule.observationSurgery,
         },
@@ -125,6 +128,8 @@ export class SchedulesService {
       ,B.CONVENIO "covenantName"
       ,A.observacao_aviso "observation"
       ,B.CIRURGIA "scheduleItem"
+      ,B.COD_CIRURGIA "surgeryCode"
+      ,A.COD_AVISO "surgeryNoticeId"
       ,B.observacao_cirurgia "observationSurgery"
       ,A.DATA_AGENDA
       , 'scheduled' "status"
@@ -207,6 +212,8 @@ export class SchedulesService {
               ...item.items,
               {
                 scheduleItem: schedule.scheduleItem,
+                surgeryCode: schedule.surgeryCode,
+                surgeryNoticeId: schedule.surgeryNoticeId,
                 observation: schedule.observation,
                 observationSurgery: schedule.observationSurgery,
               },
@@ -219,6 +226,49 @@ export class SchedulesService {
     });
 
     return schedulesGroup;
+  }
+
+  async findSurgeryResources({
+    surgeryNoticeId,
+    surgeryId,
+    userId,
+  }: FindSurgeryResourcesDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    const rows = await this.oracle.query(
+      `
+      SELECT DISTINCT
+        c.cd_aparelho_equipamento "equipmentCode",
+        d.ds_aparelho_equipamento "equipmentName"
+      FROM cirurgia_aviso a,
+        cirurgia b,
+        aparelho_cirurgia c,
+        aparelhos_equipto d
+      WHERE a.cd_cirurgia = b.cd_cirurgia
+        AND b.cd_cirurgia = c.cd_cirurgia
+        AND c.cd_aparelho_equipamento = d.cd_aparelho_equipamento
+        AND a.cd_aviso_cirurgia = :surgeryNoticeId
+        AND a.cd_cirurgia = :surgeryId
+        AND EXISTS (
+          SELECT 1
+          FROM prestador_aviso pa, prestador pr
+          WHERE pa.cd_aviso_cirurgia = :surgeryNoticeId
+            AND pa.cd_prestador = pr.cd_prestador
+            AND pr.nr_cpf_cgc = :cpf
+            AND pa.cd_ati_med = '01'
+        )
+      ORDER BY d.ds_aparelho_equipamento
+    `,
+      {
+        surgeryNoticeId,
+        surgeryId,
+        cpf: user.cpf,
+      },
+    );
+
+    return rows ?? [];
   }
 
   async count(userId: string) {

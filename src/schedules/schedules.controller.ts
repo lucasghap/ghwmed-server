@@ -1,4 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthUser, CurrentUser } from 'src/auth/jwt/current-user';
 import { JwtGuard } from 'src/auth/jwt/jwt-guard';
 import { FindSchedulesDto } from './dto/find-schedules.dto';
@@ -21,6 +27,19 @@ export class SchedulesController {
       finalDate,
       userId: user.id,
       companyId,
+    });
+  }
+
+  @Get('/surgeries/resources')
+  findSurgeryResources(
+    @Query('surgeryNoticeId', ParseIntPipe) surgeryNoticeId: number,
+    @Query('surgeryId', ParseIntPipe) surgeryId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.schedulesService.findSurgeryResources({
+      surgeryNoticeId,
+      surgeryId,
+      userId: user.id,
     });
   }
 
