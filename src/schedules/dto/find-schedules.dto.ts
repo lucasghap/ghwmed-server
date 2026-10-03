@@ -2,5 +2,5 @@ export interface FindSchedulesDto {
   initialDate: string
   finalDate: string
   userId: string
-  companyId?: string
+  companyIds?: string[]
 }

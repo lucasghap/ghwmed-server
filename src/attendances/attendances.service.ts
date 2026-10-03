@@ -30,7 +30,7 @@ export class AttendancesService {
         ,u.ds_unid_int "unitName"
         ,l.ds_leito "bedName"
         ,Trunc(SYSDATE - a.dt_atendimento) "hospitalizedDays"   
-      FROM atendime a, paciente p, prestador r, pro_fat x, convenio c, mov_int m, leito l, unid_int u, especialid e, procedimento_sus ps
+      FROM dbamv.atendime a, dbamv.paciente p, dbamv.prestador r, dbamv.pro_fat x, dbamv.convenio c, dbamv.mov_int m, dbamv.leito l, dbamv.unid_int u, dbamv.especialid e, dbamv.procedimento_sus ps
       WHERE a.cd_paciente = p.cd_paciente
         AND a.cd_prestador = r.cd_prestador
         AND a.cd_pro_int = x.cd_pro_fat(+)

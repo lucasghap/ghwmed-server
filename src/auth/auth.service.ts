@@ -32,7 +32,7 @@ export class AuthService {
           cd_prestador "id",
           nr_cpf_cgc "cpf",
           nm_prestador "name"
-        FROM prestador 
+        FROM dbamv.prestador 
         WHERE prestador.cd_prestador = :providerId
         AND prestador.tp_situacao = 'A'
       `, {

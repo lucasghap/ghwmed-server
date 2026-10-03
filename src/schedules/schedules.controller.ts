@@ -20,13 +20,13 @@ export class SchedulesController {
     @Query() queryFindSchedules: FindSchedulesDto,
     @CurrentUser() user: AuthUser,
   ) {
-    const { initialDate, finalDate, companyId } = queryFindSchedules;
+    const { initialDate, finalDate, companyIds } = queryFindSchedules;
 
     return this.schedulesService.findSchedules({
       initialDate,
       finalDate,
       userId: user.id,
-      companyId,
+      companyIds,
     });
   }
 
@@ -48,13 +48,13 @@ export class SchedulesController {
     @Query() queryFindSchedules: FindSchedulesDto,
     @CurrentUser() user: AuthUser,
   ) {
-    const { initialDate, finalDate, companyId } = queryFindSchedules;
+    const { initialDate, finalDate, companyIds } = queryFindSchedules;
 
     return this.schedulesService.findSchedulesSurgeries({
       initialDate,
       finalDate,
       userId: user.id,
-      companyId,
+      companyIds,
     });
   }
 

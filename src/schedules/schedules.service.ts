@@ -32,7 +32,7 @@ export class SchedulesService {
     initialDate,
     finalDate,
     userId,
-    companyId,
+    companyIds,
   }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -41,13 +41,30 @@ export class SchedulesService {
     });
 
     const hasCompanyFilter =
-      companyId !== undefined &&
-      companyId !== null &&
-      String(companyId).trim() !== '';
+      companyIds !== undefined &&
+      companyIds !== null &&
+      Array.isArray(companyIds) &&
+      companyIds.length > 0;
 
-    const companyClause = hasCompanyFilter
-      ? 'AND c.cd_multi_empresa = :companyId'
-      : '';
+    let companyClause = '';
+    const params: Record<string, any> = {
+      initialDate,
+      finalDate,
+      cpf: user.cpf,
+    };
+
+    if (hasCompanyFilter) {
+      // Build IN clause with bind parameters
+      const placeholders = companyIds
+        .map((_, index) => `:companyId${index}`)
+        .join(', ');
+      companyClause = `AND c.cd_multi_empresa IN (${placeholders})`;
+      
+      // Add each companyId as a separate bind parameter
+      companyIds.forEach((id, index) => {
+        params[`companyId${index}`] = String(id).trim();
+      });
+    }
 
     const schedules = await this.oracle.query(
       `
@@ -66,13 +83,13 @@ export class SchedulesService {
             THEN 'canceled'
               ELSE 'scheduled'
         END "status"
-      FROM it_agenda_central a,
-        item_agendamento b,
-        agenda_central c,
-        prestador d,
-        convenio e,
-        multi_empresas f,
-        ser_dis g
+      FROM dbamv.it_agenda_central a,
+        dbamv.item_agendamento b,
+        dbamv.agenda_central c,
+        dbamv.prestador d,
+        dbamv.convenio e,
+        dbamv.multi_empresas f,
+        dbamv.ser_dis g
       WHERE a.cd_item_agendamento = b.cd_item_agendamento
       AND a.cd_agenda_central = c.cd_agenda_central
       AND c.cd_prestador = d.cd_prestador
@@ -86,12 +103,7 @@ export class SchedulesService {
       ${companyClause}
       ORDER BY a.hr_agenda asc
     `,
-      {
-        initialDate,
-        finalDate,
-        cpf: user.cpf,
-        ...(hasCompanyFilter ? { companyId: String(companyId).trim() } : {}),
-      },
+      params,
     );
 
     return schedules;
@@ -101,7 +113,7 @@ export class SchedulesService {
     initialDate,
     finalDate,
     userId,
-    companyId,
+    companyIds,
   }: FindSchedulesDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -110,13 +122,30 @@ export class SchedulesService {
     });
 
     const hasCompanyFilter =
-      companyId !== undefined &&
-      companyId !== null &&
-      String(companyId).trim() !== '';
+      companyIds !== undefined &&
+      companyIds !== null &&
+      Array.isArray(companyIds) &&
+      companyIds.length > 0;
 
-    const companyClause = hasCompanyFilter
-      ? 'AND v.cd_multi_empresa = :companyId'
-      : '';
+    let companyClause = '';
+    const params: Record<string, any> = {
+      initialDate,
+      finalDate,
+      cpf: user.cpf,
+    };
+
+    if (hasCompanyFilter) {
+      // Build IN clause with bind parameters
+      const placeholders = companyIds
+        .map((_, index) => `:companyId${index}`)
+        .join(', ');
+      companyClause = `AND v.cd_multi_empresa IN (${placeholders})`;
+      
+      // Add each companyId as a separate bind parameter
+      companyIds.forEach((id, index) => {
+        params[`companyId${index}`] = String(id).trim();
+      });
+    }
 
     const schedules = await this.oracle.query(
       `
@@ -149,10 +178,10 @@ export class SchedulesService {
       ,Decode(v.tp_sexo, 'M', 'Masculino', 'F', 'Feminino', 'I', 'Indeterminado') Sexo
       ,v.ds_obs_aviso observacao_aviso
       FROM 
-        age_cir a
-      ,sal_cir s
-      ,cen_cir c
-      ,aviso_cirurgia v
+        dbamv.age_cir a
+      ,dbamv.sal_cir s
+      ,dbamv.cen_cir c
+      ,dbamv.aviso_cirurgia v
       WHERE a.cd_sal_cir = s.cd_sal_cir
         AND s.cd_cen_cir = c.cd_cen_cir
         AND a.cd_aviso_cirurgia = v.cd_aviso_cirurgia
@@ -170,7 +199,7 @@ export class SchedulesService {
       ,r.ds_observacao observacao_cirurgia
       ,p.cd_prestador cod_prestador
       ,t.nm_prestador prestador
-        FROM cirurgia_aviso r, convenio c, cirurgia g, prestador_aviso p, prestador t
+        FROM dbamv.cirurgia_aviso r, dbamv.convenio c, dbamv.cirurgia g, dbamv.prestador_aviso p, dbamv.prestador t
       WHERE r.cd_convenio = c.cd_convenio
         AND r.cd_cirurgia = g.cd_cirurgia
         AND r.cd_aviso_cirurgia = p.cd_aviso_cirurgia
@@ -183,12 +212,7 @@ export class SchedulesService {
       BETWEEN to_date(:initialDate, 'YYYY-MM-DD') AND to_date(:finalDate, 'YYYY-MM-DD')
       ORDER BY a.data_agenda
     `,
-      {
-        initialDate,
-        finalDate,
-        cpf: user.cpf,
-        ...(hasCompanyFilter ? { companyId: String(companyId).trim() } : {}),
-      },
+      params,
     );
 
     let schedulesGroup = [];
@@ -242,10 +266,10 @@ export class SchedulesService {
       SELECT DISTINCT
         c.cd_aparelho_equipamento "equipmentCode",
         d.ds_aparelho_equipamento "equipmentName"
-      FROM cirurgia_aviso a,
-        cirurgia b,
-        aparelho_cirurgia c,
-        aparelhos_equipto d
+      FROM dbamv.cirurgia_aviso a,
+        dbamv.cirurgia b,
+        dbamv.aparelho_cirurgia c,
+        dbamv.aparelhos_equipto d
       WHERE a.cd_cirurgia = b.cd_cirurgia
         AND b.cd_cirurgia = c.cd_cirurgia
         AND c.cd_aparelho_equipamento = d.cd_aparelho_equipamento
@@ -253,7 +277,7 @@ export class SchedulesService {
         AND a.cd_cirurgia = :surgeryId
         AND EXISTS (
           SELECT 1
-          FROM prestador_aviso pa, prestador pr
+          FROM dbamv.prestador_aviso pa, dbamv.prestador pr
           WHERE pa.cd_aviso_cirurgia = :surgeryNoticeId
             AND pa.cd_prestador = pr.cd_prestador
             AND pr.nr_cpf_cgc = :cpf
@@ -283,9 +307,9 @@ export class SchedulesService {
       SELECT 
         'scheduled' "label",
       count(*) "amount"
-        FROM it_agenda_central a,
-          agenda_central b,
-          prestador c
+        FROM dbamv.it_agenda_central a,
+          dbamv.agenda_central b,
+          dbamv.prestador c
         WHERE a.cd_agenda_central = b.cd_agenda_central
         AND b.cd_prestador = c.cd_prestador
         AND a.nm_paciente IS NOT NULL
@@ -325,10 +349,10 @@ export class SchedulesService {
           ,Decode(v.tp_sexo, 'M', 'Masculino', 'F', 'Feminino', 'I', 'Indeterminado') Sexo
           ,v.ds_obs_aviso observacao_aviso
           FROM 
-            age_cir a
-          ,sal_cir s
-          ,cen_cir c
-          ,aviso_cirurgia v
+            dbamv.age_cir a
+          ,dbamv.sal_cir s
+          ,dbamv.cen_cir c
+          ,dbamv.aviso_cirurgia v
           WHERE a.cd_sal_cir = s.cd_sal_cir
             AND s.cd_cen_cir = c.cd_cen_cir
             AND a.cd_aviso_cirurgia = v.cd_aviso_cirurgia
@@ -345,7 +369,7 @@ export class SchedulesService {
           ,r.ds_observacao observacao_cirurgia
           ,p.cd_prestador cod_prestador
           ,t.nm_prestador prestador
-            FROM cirurgia_aviso r, convenio c, cirurgia g, prestador_aviso p, prestador t
+            FROM dbamv.cirurgia_aviso r, dbamv.convenio c, dbamv.cirurgia g, dbamv.prestador_aviso p, dbamv.prestador t
           WHERE r.cd_convenio = c.cd_convenio
             AND r.cd_cirurgia = g.cd_cirurgia
             AND r.cd_aviso_cirurgia = p.cd_aviso_cirurgia
@@ -362,7 +386,7 @@ export class SchedulesService {
         SELECT
           'attendances-internacao' "label",
           count(*) "amount"
-          FROM atendime a, paciente p, prestador r, pro_fat x, convenio c, mov_int m, leito l, unid_int u, especialid e
+          FROM dbamv.atendime a, dbamv.paciente p, dbamv.prestador r, dbamv.pro_fat x, dbamv.convenio c, dbamv.mov_int m, dbamv.leito l, dbamv.unid_int u, dbamv.especialid e
         WHERE a.cd_paciente = p.cd_paciente
           AND a.cd_prestador = r.cd_prestador
           AND a.cd_pro_int = x.cd_pro_fat(+)

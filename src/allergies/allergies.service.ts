@@ -13,7 +13,7 @@ export class AllergiesService {
       ,decode(ap.tp_alergia, 'O','outros', 'A','Alimento', 'S', '(Substancia) Medicamento') "allergyType"
       ,Decode(ap.tp_severidade,'G','Grave', 'M','Moderada', 'L','Leve', 'D','Desconhecida') "severity"
       ,da.ds_observacao "observation"
-        FROM pw_documento_clinico dc, pw_doc_alergia_pac da, pw_alergia_pac ap, substancia su
+        FROM dbamv.pw_documento_clinico dc, dbamv.pw_doc_alergia_pac da, dbamv.pw_alergia_pac ap, dbamv.substancia su
       WHERE dc.cd_documento_clinico = da.cd_documento_clinico
         AND da.cd_problema = ap.cd_problema
         AND ap.cd_substancia = su.cd_substancia

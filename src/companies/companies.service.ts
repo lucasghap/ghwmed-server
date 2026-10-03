@@ -11,7 +11,7 @@ export class CompaniesService {
       SELECT
         cd_multi_empresa "multiCompanyId",
         ds_multi_empresa "name"
-      FROM multi_empresas
+      FROM dbamv.multi_empresas
       WHERE sn_ativo = 'S'
     `,
     );

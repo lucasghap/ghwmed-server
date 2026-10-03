@@ -13,7 +13,7 @@ export class ExamsImageService {
       ,To_Char(pr.dt_pedido, 'dd/mm/yyyy') || ' ' || To_Char(pr.hr_pedido, 'hh24:mi') "date"
       ,er.ds_exa_rx "examName"
       ,ip.sn_realizado "done"
-        FROM ped_rx pr, itped_rx ip, exa_rx er
+        FROM dbamv.ped_rx pr, dbamv.itped_rx ip, dbamv.exa_rx er
       WHERE pr.cd_ped_rx = ip.cd_ped_rx
         AND ip.cd_exa_rx = er.cd_exa_rx
         AND pr.cd_atendimento = :attendanceId

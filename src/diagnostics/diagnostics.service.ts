@@ -10,7 +10,7 @@ export class DiagnosticsService {
       SELECT 
         To_Char(a.dh_diagnostico, 'dd/mm/yyyy') || ' ' || To_Char(a.dh_diagnostico, 'hh24:mi') "date",
         a.cd_cid || ' ' || c.ds_cid "cid"
-      FROM diagnostico_atendime a, cid c
+      FROM dbamv.diagnostico_atendime a, dbamv.cid c
       WHERE a.cd_cid = c.cd_cid
       AND a.cd_atendimento = :attendanceId
       ORDER BY a.dh_diagnostico

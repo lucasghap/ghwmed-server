@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { OracleService } from './oracle.service';
 
+@Global()
 @Module({
-  controllers: [],
-  providers: [OracleService]
+  providers: [OracleService],
+  exports: [OracleService],
 })
 export class OracleModule {}

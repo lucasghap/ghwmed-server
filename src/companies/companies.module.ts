@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { OracleService } from 'src/oracle/oracle.service';
 import { CompaniesController } from './companies.controller';
 import { CompaniesService } from './companies.service';
 
 @Module({
   controllers: [CompaniesController],
-  providers: [CompaniesService, OracleService],
+  providers: [CompaniesService],
 })
 export class CompaniesModule {}
