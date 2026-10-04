@@ -13,17 +13,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  DOCTOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum IntegrationType {
+  IMAGE_EXAM
+  LAB_EXAM
+  MEDICAL_RECORD_DOCUMENT
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum IntegrationResponseMode {
+  OPEN_URL
+  BASE64
+  BUFFER
+}
+
 model User {
-  id       String @id @default(uuid())
+  id       String     @id @default(uuid())
   name     String
-  cpf      String @unique
-  email    String @unique
+  cpf      String?    @unique
+  email    String     @unique
   password String
+  role     UserRole   @default(DOCTOR)
+  status   UserStatus @default(ACTIVE)
 
   created_at DateTime @default(now())
   update_at  DateTime @default(now())
 
   schedulesAssisteds ScheduleAssisted[]
+  auditLogs          AdminAuditLog[]
 
   @@map("users")
 }
@@ -40,4 +70,60 @@ model ScheduleAssisted {
   update_at  DateTime @default(now())
 
   @@map("schedules_assisteds")
+}
+
+model PlatformSettings {
+  id               String   @id @default("default")
+  primary_color    String?
+  secondary_color  String?
+  login_logo_path  String?
+  header_logo_path String?
+  favicon_path     String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now())
+
+  @@map("platform_settings")
+}
+
+model Integration {
+  id     String            @id @default(uuid())
+  name   String
+  type   IntegrationType
+  provider String          @default("custom")
+  status IntegrationStatus @default(ACTIVE)
+
+  url    String
+  token  String?
+
+  response IntegrationResponseMode?
+
+  separate_report      Boolean                   @default(false)
+  report_url           String?
+  report_response      IntegrationResponseMode?
+  ghapflow_integration Boolean                   @default(false)
+
+  /// Reserved for future routing rules between multiple integrations of the same type.
+  config Json @default("{}")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@index([type, status])
+  @@map("integrations")
+}
+
+model AdminAuditLog {
+  id        String   @id @default(uuid())
+  actor_id  String
+  actor     User     @relation(fields: [actor_id], references: [id], onDelete: Cascade)
+  action    String
+  entity    String
+  entity_id String?
+  metadata  Json?
+  created_at DateTime @default(now())
+
+  @@index([actor_id])
+  @@index([entity, entity_id])
+  @@index([created_at])
+  @@map("admin_audit_logs")
 }
