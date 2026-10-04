@@ -79,6 +79,7 @@ model PlatformSettings {
   login_logo_path  String?
   header_logo_path String?
   favicon_path     String?
+  assist_enabled   Boolean  @default(false)
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now())
 

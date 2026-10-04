@@ -11,6 +11,9 @@ import { AdminDashboardController } from './dashboard/admin-dashboard.controller
 import { AdminDashboardService } from './dashboard/admin-dashboard.service'
 import { AdminIntegrationsController } from './integrations/admin-integrations.controller'
 import { AdminIntegrationsService } from './integrations/admin-integrations.service'
+import { AdminSettingsController } from './settings/admin-settings.controller'
+import { AdminSettingsService } from './settings/admin-settings.service'
+import { PublicSettingsController } from './settings/public-settings.controller'
 import { AdminUsersController } from './users/admin-users.controller'
 import { AdminUsersService } from './users/admin-users.service'
 
@@ -22,6 +25,8 @@ import { AdminUsersService } from './users/admin-users.service'
     AdminBrandingController,
     PublicBrandingController,
     AdminIntegrationsController,
+    AdminSettingsController,
+    PublicSettingsController,
   ],
   providers: [
     PrismaService,
@@ -32,6 +37,8 @@ import { AdminUsersService } from './users/admin-users.service'
     AdminUsersService,
     AdminBrandingService,
     AdminIntegrationsService,
+    AdminSettingsService,
   ],
+  exports: [AdminSettingsService],
 })
 export class AdminModule {}
