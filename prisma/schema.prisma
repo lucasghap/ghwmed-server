@@ -44,8 +44,8 @@ model User {
   id       String     @id @default(uuid())
   name     String
   cpf      String?    @unique
-  email    String     @unique
-  password String
+  email    String?    @unique
+  password String?
   role     UserRole   @default(DOCTOR)
   status   UserStatus @default(ACTIVE)
 

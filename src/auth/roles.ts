@@ -9,3 +9,6 @@ export const USER_STATUSES = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
 } as const
+
+/** Returned when a doctor created through the PEP signs in by CPF before setting a password. */
+export const PASSWORD_NOT_SET_MESSAGE = 'Cadastre uma senha para acessar'
