@@ -1,6 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { JwtGuard } from 'src/auth/jwt/jwt-guard';
 import { DiagnosticsService } from './diagnostics.service';
 
+@UseGuards(JwtGuard)
 @Controller('diagnostics')
 export class DiagnosticsController {
   constructor(private readonly diagnosticsService: DiagnosticsService) {}

@@ -1,10 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
 import { OracleService } from 'src/oracle/oracle.service'
 import { PrismaService } from 'src/prima.service'
 import { CreateAuthDto } from './dto/create-auth.dto'
-import { USER_ROLES, USER_STATUSES } from './roles'
+import { PASSWORD_NOT_SET_MESSAGE, USER_ROLES, USER_STATUSES } from './roles'
 
 interface ProviderMv {
   id: number
@@ -23,7 +29,8 @@ export class AuthService {
   async create({ cpf, email, password, providerId, token }: CreateAuthDto) {
     let providerMv: ProviderMv | null = null
 
-    if (token && token !== process.env.TOKEN_PEP) {
+    // Signing in with a provider skips the password, so the PEP token is mandatory.
+    if ((providerId || token) && token !== process.env.TOKEN_PEP) {
       throw new BadRequestException('Token inválido')
     }
 
@@ -51,7 +58,7 @@ export class AuthService {
       ? providerMv.cpf.padStart(11, '0')
       : cpf || undefined
 
-    const user = identifierCpf
+    let user = identifierCpf
       ? await this.prisma.user.findUnique({
           where: {
             cpf: identifierCpf,
@@ -68,6 +75,17 @@ export class AuthService {
     const invalidCredentialsMessage =
       !identifierCpf && email ? 'E-mail ou senha inválidos' : 'CPF ou senha inválidos'
 
+    // First access through the PEP: the account is created from MV data, without
+    // e-mail or password. The doctor sets a password on the first CPF login.
+    if (!user && providerMv) {
+      user = await this.prisma.user.create({
+        data: {
+          name: providerMv.name,
+          cpf: identifierCpf,
+        },
+      })
+    }
+
     if (!user)
       throw new UnauthorizedException(invalidCredentialsMessage)
 
@@ -82,6 +100,10 @@ export class AuthService {
     if (!providerId) {
       if (!password) {
         throw new UnauthorizedException(invalidCredentialsMessage)
+      }
+
+      if (!user.password) {
+        throw new ForbiddenException(PASSWORD_NOT_SET_MESSAGE)
       }
 
       const passwordMatch = await compare(password, user.password)
