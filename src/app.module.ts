@@ -12,9 +12,11 @@ import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { PasswordsModule } from './passwords/passwords.module';
 import { SchedulesAssistedsModule } from './schedules-assisteds/schedules-assisteds.module';
 import { AdminModule } from './admin/admin.module';
+import { MedicalRecordsModule } from './medical-records/medical-records.module';
+import { LabExamsModule } from './lab-exams/lab-exams.module';
 
 @Module({
-  imports: [OracleModule, SchedulesModule, AttendancesModule, CompaniesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule, SchedulesAssistedsModule, AdminModule],
+  imports: [OracleModule, SchedulesModule, AttendancesModule, CompaniesModule, UsersModule, AuthModule, DiagnosticsModule, AllergiesModule, ExamsImageModule, PrescriptionsModule, PasswordsModule, SchedulesAssistedsModule, AdminModule, MedicalRecordsModule, LabExamsModule],
   controllers: [],
   providers: [],
 })
